@@ -1,0 +1,86 @@
+export  const rows = [
+  {
+  id: 1,
+  name: "Jon Snow",
+  email: "jonsnow@gmail.com",
+  age: 35,
+  phone: "(665)121-5454",
+  access: "Admin",
+},
+{
+  id: 2,
+  name: "Cersei Lannister",
+  email: "cerseilannister@gmail.com",
+  age: 42,
+  phone: "(421)314-2288",
+  access: "Admin",
+},
+{
+  id: 3,
+  name: "Jaime Lannister",
+  email: "jaimelannister@gmail.com",
+  age: 45,
+  phone: "(422)982-6739",
+  access: "Admin",
+},
+{
+  id: 4,
+  name: "Arya Stark",
+  email: "aryastark@gmail.com",
+  age: 22,
+  phone: "(423)678-1234",
+  access: "Manager",
+},
+{
+  id: 5,
+  name: "Tyrion Lannister",
+  email: "tyrionlannister@gmail.com",
+  age: 39,
+  phone: "(424)789-4321",
+  access: "Manager",
+},
+{
+  id: 6,
+  name: "Daenerys Targaryen",
+  email: "daenerystargaryen@gmail.com",
+  age: 31,
+  phone: "(425)321-9876",
+  access: "User",
+},
+{
+  id: 7,
+  name: "Bran Stark",
+  email: "branstark@gmail.com",
+  age: 20,
+  phone: "(426)111-2222",
+  access: "User",
+},
+{
+  id: 8,
+  name: "Theon Greyjoy",
+  email: "theongreyjoy@gmail.com",
+  age: 33,
+  phone: "(427)333-4444",
+  access: "User",
+},
+{
+  id: 9, 
+  name: "Sansa Stark",
+  email: "sansastark@gmail.com",
+  age: 28,
+  phone: "(428)555-6666",
+  access: "User",
+}
+
+
+];
+
+export const columns = [
+  { field: 'id', headerName: 'ID' , width: 33 , align: 'center' , headerAlign:"center"},
+  { field: 'name', headerName: 'Name' , align: 'center' , headerAlign:"center"},
+  { field: 'email', headerName: 'Email', flex : 1 , align: 'center' , headerAlign:"center"},
+  { field: 'age', headerName: 'Age' , align: 'center' , headerAlign:"center"},
+  { field: 'phone', headerName: 'Phone' , flex : 1 , align: 'center' , headerAlign:"center"},
+  { field: 'access', headerName: 'Access' , flex : 1 , align: 'center' , headerAlign:"center"},
+
+];

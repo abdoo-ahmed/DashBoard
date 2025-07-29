@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import TopBar from './Components/TopBar';
 import SideBar from './Components/SideBar';
 import { getDesignTokens } from './theme';
+import { Outlet } from 'react-router-dom';
 
 
 
@@ -34,7 +35,7 @@ export default function MiniDrawer() {
 
 
   const [mode , setMode] = React.useState(localStorage.getItem('currentMode') ? localStorage.getItem('currentMode') : 'light');
-  const theme = React.useMemo(()=> createTheme(getDesignTokens(mode)) , [mode])
+  const theme = React.useMemo(()=> createTheme(getDesignTokens(mode)) , [mode]);
   return (
     <ThemeProvider theme ={theme} >
       <Box sx={{ display: 'flex' }}>
@@ -46,9 +47,7 @@ export default function MiniDrawer() {
 
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <DrawerHeader />
-          <Typography paragraph>
-            Abdo Ahmed
-          </Typography>
+          <Outlet/>
         </Box>
       </Box>
     </ThemeProvider>

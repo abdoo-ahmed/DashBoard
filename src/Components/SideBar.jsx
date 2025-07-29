@@ -10,6 +10,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import {grey} from '@mui/material/colors';
+
 import { Avatar, styled, Typography, useTheme } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -24,6 +26,7 @@ import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutl
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 
@@ -86,6 +89,8 @@ const Drawer = styled(MuiDrawer, {
 
 export default function SideBar({open , handleDrawerClose}) {
 
+    const navigate = useNavigate();
+    const location = useLocation();
     const theme = useTheme();
     const Array1 =[
         {
@@ -139,22 +144,28 @@ export default function SideBar({open , handleDrawerClose}) {
 
         <Divider />
 
-        <Avatar sx={{mx : "auto" , width : 40 , height : 40 }} alt="Travis Howard" src="/static/images/avatar/2.jpg" />
+        <Avatar sx={{mx : "auto" , transition : "0.25s" , width : open ? 100 : 55 , height : open ? 100 : 55 , my : 1 , border : "2px solid grey" }} alt="Travis Howard" src="https://i0.wp.com/alaa.njmsyria.com/wp-content/uploads/2023/07/93e9e96a4a9538ebef08f7387c73c643.jpg" />
 
-        <Typography sx={{ fontSize : '10px' }} align='center'>  abdo </Typography>
-        <Typography sx={{ fontSize : '10px' }}  align='center'>  Admin </Typography>
+        <Typography sx={{ fontSize : open ? 18 : 0 , transition : "0.25s" }} align='center'>  layla </Typography>
+        <Typography sx={{ fontSize : open ? 15 : 0 , transition : "0.25s" , color : theme.palette.info.main }} align='center'>  Admin </Typography>
 
 
 
         <Divider />
+
         <List>
           {Array1.map((item) => (
             <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
+                onClick={() => {
+                  navigate(item.path)
+                }}
                 sx={{
                   minHeight: 40,
                   justifyContent: open ? 'initial' : 'center',
                   px: 2.5,
+                  height : '10px',
+                  bgcolor : location.pathname === item.path ? theme.palette.mode === "dark" ? grey[700] : grey[400] :"" ,
                 }}
               >
                 <ListItemIcon
@@ -178,10 +189,14 @@ export default function SideBar({open , handleDrawerClose}) {
           {Array2.map((item) => (
             <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
+              onClick={() => {
+                  navigate(item.path)
+                }}
                 sx={{
                   minHeight: 40,
                   justifyContent: open ? 'initial' : 'center',
                   px: 2.5,
+                  bgcolor : location.pathname === item.path ? "grey" :"" ,
                   height : '10px',
                 }}
               >
@@ -207,11 +222,15 @@ export default function SideBar({open , handleDrawerClose}) {
           {Array3.map((item) => (
             <ListItem key={item.text} disablePadding sx={{ display: 'block'}}>
               <ListItemButton
+              onClick={() => {
+                  navigate(item.path)
+                }}
                 sx={{
                   minHeight: 40,
-                   height : '10px' ,
+                  height : '10px' ,
                   justifyContent: open ? 'initial' : 'center',
                   px: 2.5,
+                  bgcolor : location.pathname === item.path ? "grey" :""
                 }}
               >
                 <ListItemIcon
