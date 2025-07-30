@@ -1,3 +1,5 @@
+
+
 export  const rows = [
   {
   id: 1,
@@ -70,17 +72,4 @@ export  const rows = [
   age: 28,
   phone: "(428)555-6666",
   access: "User",
-}
-
-
-];
-
-export const columns = [
-  { field: 'id', headerName: 'ID' , width: 33 , align: 'center' , headerAlign:"center"},
-  { field: 'name', headerName: 'Name' , align: 'center' , headerAlign:"center"},
-  { field: 'email', headerName: 'Email', flex : 1 , align: 'center' , headerAlign:"center"},
-  { field: 'age', headerName: 'Age' , align: 'center' , headerAlign:"center"},
-  { field: 'phone', headerName: 'Phone' , flex : 1 , align: 'center' , headerAlign:"center"},
-  { field: 'access', headerName: 'Access' , flex : 1 , align: 'center' , headerAlign:"center"},
-
-];
+}];
