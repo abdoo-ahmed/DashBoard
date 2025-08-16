@@ -1,88 +1,399 @@
 import React from 'react'
 import { DataGrid  } from '@mui/x-data-grid';
-import {  rows } from './Data';
+import { useEffect, useState } from "react";
+import {
+  AdminPanelSettingsOutlined,
+  LockOpenOutlined,
+  SecurityOutlined,
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+} from "@mui/icons-material";
 import { Box, useTheme , Typography} from '@mui/material';
-import { AdminPanelSettingsOutlined , LockOpenOutlined , Padding, SecurityOutlined } from '@mui/icons-material';
-
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Stack,
+  TextField,
+  MenuItem,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import {
+  addUser,
+  getUsers,
+  updateUser,
+  searchUserByName,
+  searchUserByAge,
+  deleteUser, 
+} from "../../supaBase.js";
+// import { useOutletContext } from "react-router-dom";
 export default function Team() {
 
   const theme = useTheme();
-  
-  const columns = [
-  { field: 'id', headerName: 'ID' , width: 30 , align: 'center' , headerAlign:"center"},
-  { field: 'name', headerName: 'Name' , flex : 1 , align: 'center' , headerAlign:"center"},
-  { field: 'email', headerName: 'Email', flex : 1 , align: 'center' , headerAlign:"center"},
-  { field: 'age', headerName: 'Age' , align: 'center' , headerAlign:"center"},
-  { field: 'phone', headerName: 'Phone' , flex : 1 , align: 'center' , headerAlign:"center"},
-  { field: 'access', headerName: 'Access' , flex : 1 , align: 'center' , headerAlign:"center" ,
-    renderCell : ({row : {access}}) => { 
-  return <>
+  const [search, setSearch] = useState("");
+  const [rows, setRows] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [OpenDeletSnackbar, setOpenDeletSnackbar] = useState(false);
+  const [openAddSnackbar, setOpenAddSnackbar] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [openEditSnackbar, setOpenEditSnackbar] = useState(false);
+  const [editingRow, setEditingRow] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    age: "",
+    phone: "",
+    access: "User",
+  });
 
-   
-   <Box
-        sx={{
-          height: '100%',
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getUsers();
+      setRows(data);
+    }
+    fetchData();
+  }, []);
+
+  const debouncedQuery = useDebounce(search, 300);
+
+ useEffect(() => {
+  async function runSearch() {
+    if (!debouncedQuery) {
+      const all = await getUsers();
+      setRows(all);
+      return;
+    }
+    const numeric = /^\d+$/.test(debouncedQuery.trim());
+    if (numeric) {
+      const res = await searchUserByAge(Number(debouncedQuery.trim()));
+      if (!res.error) setRows(res.data);
+      else setRows([]);
+    } else {
+      const res = await searchUserByName(debouncedQuery.trim());
+      if (!res.error) setRows(res.data);
+      else setRows([]);
+    }
+  }
+  runSearch();
+}, [debouncedQuery]);
+  const handleOpen = () => setOpen(true);
+
+  const handleClose = () => {
+    setOpen(false);
+    setIsEdit(false);
+    setEditingRow(null);
+    setFormData({ name: "", email: "", age: "", phone: "", access: "User" });
+    setErrors({});
+  };
+
+  const handleAdd = async () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (formData.name.trim().length < 3) {
+      newErrors.name = "Name must be at least 3 characters";
+    }
+    if (!/\S+@\S+\.\S+/.test(formData.email))
+      newErrors.email = "Email is invalid";
+    if (isNaN(formData.age) || Number(formData.age) <= 0)
+      newErrors.age = "Enter a valid age";
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone is required";
+    } else if (!/^01[0125][0-9]{8}$/.test(formData.phone)) {
+      newErrors.phone = "Enter a valid Egyptian phone number";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    try {
+      const addedUser = await addUser(
+        formData.name,
+        formData.email,
+        formData.age,
+        formData.phone,
+        formData.access
+      );
+      setRows((prev) => [...prev, addedUser[0]]);
+      handleClose();
+      setFormData({
+        name: "",
+        email: "",
+        age: "",
+        phone: "",
+        access: "User",
+      });
+      setOpenAddSnackbar(true);
+      setErrors({});
+    } catch (err) {
+      console.error("Failed to add user:", err.message);
+    }
+  };
+
+  const handleEdit = (row) => {
+    setIsEdit(true);
+    setEditingRow(row);
+    setFormData({
+      name: row.name || "",
+      email: row.email || "",
+      age: row.age ?? "",
+      phone: row.phone || "",
+      access: row.access || "User",
+    });
+    setOpen(true);
+    
+  };
+
+  const handleSave = async () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (formData.name.trim().length < 3) {
+      newErrors.name = "Name must be at least 3 characters";
+    }
+    if (!/\S+@\S+\.\S+/.test(formData.email))
+      newErrors.email = "Email is invalid";
+    if (isNaN(formData.age) || Number(formData.age) <= 0)
+      newErrors.age = "Enter a valid age";
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone is required";
+    } else if (!/^01[0125][0-9]{8}$/.test(formData.phone)) {
+      newErrors.phone = "Enter a valid Egyptian phone number";
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    try {
+      const updated = await updateUser(editingRow.id, {
+        name: formData.name,
+        email: formData.email,
+        age: formData.age,
+        phone: formData.phone,
+        access: formData.access,
+      });
+      const updatedUser = Array.isArray(updated) ? updated[0] : updated;
+      setRows((prev) =>
+        prev.map((r) => (r.id === updatedUser.id ? updatedUser : r))
+      );
+      handleClose();
+      setOpenEditSnackbar(true);
+    } catch (err) {
+      console.error("Failed to update user:", err.message);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  
+const handleDelete = async (id) => {
+  try {
+    await deleteUser(id);
+    setRows((prev) => prev.filter((row) => row.id !== id));
+    setOpenDeletSnackbar(true);
+  } catch (err) {
+    console.error("Failed to delete user:", err.message);
+  }
+};
+
+  const columns = [
+    { field: "id", headerName: "ID", width: 50, align: "center", headerAlign: "center" },
+    { field: "name", headerName: "Name", width: 150, flex: 1, align: "center", headerAlign: "center" },
+    { field: "email", headerName: "Email", flex: 1, align: "center", headerAlign: "center" },
+    { field: "age", headerName: "Age", width: 50, align: "center", headerAlign: "center" },
+    { field: "phone", headerName: "Phone", flex: 1, align: "center", headerAlign: "center" },
+   {
+  field: "access",
+  headerName: "Access",
+  minWidth: 120,
+  align: "center",
+  headerAlign: "center",
+  renderCell: ({ row: { access } }) => (
+    <Box
+      sx={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
+        backgroundColor:
+          access === "Admin"
+            ? theme.palette.primary.dark
+            : access === "Manager"
+            ? theme.palette.secondary.dark
+            : "#3da58a",
+        color: "#fff",
+        borderRadius: "5px",
+        padding: "4px 8px",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {access === "Admin" ? (
+        <AdminPanelSettingsOutlined fontSize="small" />
+      ) : access === "Manager" ? (
+        <LockOpenOutlined fontSize="small" />
+      ) : (
+        <SecurityOutlined fontSize="small" />
+      )}
+      <Typography sx={{ fontSize: "14px" }}>{access}</Typography>
+    </Box>
+  ),
+},
+    {
+      field: "actions",
+      headerName: "Actions",
+      renderCell: (params) => (
+        <Stack direction="row" spacing={1}>
+          <IconButton color="primary" onClick={() => handleEdit(params.row)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton color="error" onClick={() => handleDelete(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </Stack>
+      ),
+    },
+  ];
+
+  return <>
+      <section
+        style={{
+          display: "flex",
+          marginBottom: 12,
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingRight: "2rem",
+          gap: "10px",
+          flexWrap: "wrap",
+        }}>
+        <Box style={{ minWidth: "200px" }}>
+          <h1 style={{ color: theme.palette.info.main, fontSize: 25, margin: 0 }}>
+            TEAM
+          </h1>
+          <p style={{ marginTop: 0 }}>Managing the Team Members</p>
+        </Box>
+
+    
         <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            backgroundColor:
-              access === 'Admin'
-                ? theme.palette.primary.dark
-                : access === 'Manager'
-                ? theme.palette.secondary.dark
-                : '#3da58a',
-            color: '#fff',
-            borderRadius: '5px',
-            padding: '4px 8px',
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+            minWidth: "200px",
           }}
         >
-          {access === 'Admin' ? (
-            <AdminPanelSettingsOutlined fontSize="small" />
-          ) : access === 'Manager' ? (
-            <LockOpenOutlined fontSize="small" />
-          ) : (
-            <SecurityOutlined fontSize="small" />
-          )}
-          <Typography sx={{ fontSize: '15px' }}>{access}</Typography>
+          <TextField
+            size="small"
+            placeholder="Search by name or age..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              width: "100%",
+              maxWidth: 260,
+            }}
+          />
         </Box>
+
+    
+        <Box style={{ minWidth: "150px" }}>
+          <Button
+            variant="contained"
+            color="info"
+            startIcon={<AddIcon />}
+            onClick={handleOpen}
+            sx={{ width: "100%" }}
+          >
+            Add ACCESS
+          </Button>
+        </Box>
+      </section>
+
+
+
+
+      
+      <Snackbar
+        open={OpenDeletSnackbar}
+        autoHideDuration={2000}
+        onClose={() => setOpenDeletSnackbar(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity="success" sx={{ fontSize: "1rem" }}>
+          Deleted Successfully
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={openAddSnackbar}
+        autoHideDuration={2000}
+        onClose={() => setOpenAddSnackbar(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity="success" sx={{ fontSize: "1rem" }}>
+          Added Successfully
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+      open={openEditSnackbar}
+      autoHideDuration={2000}
+      onClose={() => setOpenEditSnackbar(false)}
+      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+    >
+      <Alert severity="success" sx={{ fontSize: "1rem" }}>
+        Updated Successfully
+      </Alert>
+    </Snackbar>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>{isEdit ? "Edit User" : "Add New Access"}</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1, minWidth: "400px" }}>
+            <TextField name="name" label="Name" fullWidth value={formData.name} onChange={handleChange} error={!!errors.name} helperText={errors.name} />
+            <TextField name="email" label="Email" fullWidth value={formData.email} onChange={handleChange} error={!!errors.email} helperText={errors.email} />
+            <TextField name="age" label="Age" fullWidth value={formData.age} onChange={handleChange} error={!!errors.age} helperText={errors.age} />
+            <TextField name="phone" label="Phone" fullWidth value={formData.phone} onChange={handleChange} error={!!errors.phone} helperText={errors.phone} />
+            <TextField name="access" label="Access" select fullWidth value={formData.access} onChange={handleChange}>
+              <MenuItem value="Admin">Admin</MenuItem>
+              <MenuItem value="Manager">Manager</MenuItem>
+              <MenuItem value="User">User</MenuItem>
+            </TextField>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          {isEdit ? (
+            <Button variant="contained" color="info" onClick={handleSave}>Save</Button>
+          ) : (
+            <Button variant="contained" color="info" onClick={handleAdd}>Add</Button>
+          )}
+        </DialogActions>
+      </Dialog>
+      <Box style={{ height: 400, width: "98%", mx: "auto" }}>
+        <DataGrid autoHeight rows={rows} columns={columns} />
       </Box>
-  
-  
-  
-  
-  </>
-  },
+    </>
 }
 
-];
 
-
-
-
-  return <>
-   <div>
-      <h1 style={{color: theme.palette.info.main , fontSize : 25 , margin : 0 }}>
-        TEAM
-      </h1>
-
-      <p style={{ marginTop : 0 }}>
-        Managing the Team Members
-      </p>
-
-    </div>
-
-  <Box style={{ height: 500 , width : '98%' , mx : "auto"}}>
-    <DataGrid autoHeight  rows={rows} columns={columns} />
-  </Box>
-  
-  
-  </>
+function useDebounce(value, delayMs) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delayMs);
+    return () => clearTimeout(id);
+  }, [value, delayMs]);
+  return debounced;
 }

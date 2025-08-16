@@ -29,7 +29,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: 'inherit',
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
+    
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
@@ -73,9 +73,10 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-export default function TopBar({ handleDrawerOpen, open  , setMode}) {
+export default function TopBar({ handleDrawerOpen, open  , setMode }) {
 
   const theme = useTheme()
+  
   return (
     <AppBar position="fixed" open={open}>
       <Toolbar>
@@ -95,15 +96,16 @@ export default function TopBar({ handleDrawerOpen, open  , setMode}) {
         </IconButton>
 
 
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </Search>
+        <Search>
+          <SearchIconWrapper>
+            <SearchIcon />
+          </SearchIconWrapper>
+          <StyledInputBase
+            placeholder="Search"
+            inputProps={{ 'aria-label': 'search', title: 'Search by name or age' }}
+            
+          />
+        </Search>
 
 
 
