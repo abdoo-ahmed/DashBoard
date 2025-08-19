@@ -33,8 +33,6 @@ const router = createBrowserRouter(
       <Route path='line' element={<Line />} />
       <Route path='geography' element={<Geography />} />
 
-      {/* Line */}
-
     </Route>
     
 

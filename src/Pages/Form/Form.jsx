@@ -40,10 +40,12 @@ export default function Form() {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm()
 
   const onSubmit = () => {
     handleClick()
+    reset();
   }
   return <>
     <Box

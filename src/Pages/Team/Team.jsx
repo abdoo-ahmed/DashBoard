@@ -82,7 +82,8 @@ export default function Team() {
   }
   runSearch();
 }, [debouncedQuery]);
-  const handleOpen = () => setOpen(true);
+  
+const handleOpen = () => setOpen(true);
 
   const handleClose = () => {
     setOpen(false);
