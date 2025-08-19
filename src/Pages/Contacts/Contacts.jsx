@@ -6,17 +6,20 @@ import {
   SecurityOutlined,
 
 } from "@mui/icons-material";
-import { Box, useTheme , Typography} from '@mui/material';
+import { Box, useTheme , Typography, CircularProgress} from '@mui/material';
 
 import { getUsers } from '../../supaBase';
 
 export default function Contacts() {
       const theme = useTheme();
+      const [loading, setLoading] = useState(true);
       const [rows, setRows] = useState([]);
       useEffect(() => {
           async function fetchData() {
+            setLoading(true);
             const data = await getUsers();
             setRows(data);
+            setLoading(false);
           }
           fetchData();
         }, []);
@@ -66,9 +69,20 @@ export default function Contacts() {
 
   return <>
 
-      
-      <Box style={{ height: 400, width: "98%", mx: "auto" }}>
+      {loading ? 
+      <Box
+      sx={{
+        height: "75vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <CircularProgress color={theme.palette.primary.main} size={60} />
+      </Box> :<Box style={{ height: 400, width: "98%", mx: "auto" }}>
         <DataGrid  slots={{toolbar: GridToolbar,}} autoHeight  rows={rows} columns={columns} />
-      </Box>
+      </Box>}
+      
+      
     </>
 }

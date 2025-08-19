@@ -13,7 +13,7 @@ export default function Dashboard() {
   
   return <>
       
-      <section className='mb-5'>
+      <section className='mb-5 flex justify-between items-center'>
         <Box >
           <h1 style={{ color: theme.palette.info.main, fontWeight : 'bold' , fontSize: 25, margin: 0 }}>
           DASHBOARD

@@ -3,13 +3,13 @@ import { ResponsiveChoropleth } from '@nivo/geo'
 import { Box, useTheme } from '@mui/material'
 import { geo } from './world_countries'
 import { data } from './data'
-export default function GeographyChart() {
+export default function GeographyChart({isDashboard=false}) {
   const theme = useTheme();
   return <>
     
-    <Box sx={{height:'75vh' , borderRadius:5 , border: `1px solid ${theme.palette.text.primary}`}}>
+    <Box sx={{height:'75vh' , borderRadius:5 }}>
           <ResponsiveChoropleth
-          projectionScale={150}
+          projectionScale={isDashboard ? 80 :150}
             theme={
                     {
                       "text": {
@@ -129,8 +129,8 @@ export default function GeographyChart() {
             valueFormat=".2s"
             enableGraticule={false}
             graticuleLineColor="#dddddd"
-            borderWidth={0.5}
-            borderColor="#152538"
+            borderWidth={1.1}
+            borderColor="#fff"
             legends={[
           {
               anchor: 'bottom-left',

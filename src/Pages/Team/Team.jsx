@@ -9,7 +9,7 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { Box, useTheme , Typography} from '@mui/material';
+import { Box, useTheme , Typography, CircularProgress} from '@mui/material';
 import {
   Button,
   Dialog,
@@ -41,6 +41,7 @@ export default function Team() {
   const [OpenDeletSnackbar, setOpenDeletSnackbar] = useState(false);
   const [openAddSnackbar, setOpenAddSnackbar] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [openEditSnackbar, setOpenEditSnackbar] = useState(false);
   const [editingRow, setEditingRow] = useState(null);
   const [errors, setErrors] = useState({});
@@ -54,8 +55,10 @@ export default function Team() {
 
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       const data = await getUsers();
       setRows(data);
+      setLoading(false);
     }
     fetchData();
   }, []);
@@ -383,9 +386,19 @@ const handleDelete = async (id) => {
           )}
         </DialogActions>
       </Dialog>
-      <Box style={{ height: 400, width: "98%", mx: "auto" }}>
+      {loading ?     <Box
+      sx={{
+        height: "75vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <CircularProgress color={theme.palette.primary.main} size={60} />
+      </Box> :<Box style={{ height: 400, width: "98%", mx: "auto" }}>
         <DataGrid autoHeight rows={rows} columns={columns} />
-      </Box>
+      </Box>}
+      
     </>
 }
 

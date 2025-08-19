@@ -6,18 +6,21 @@ import {
   SecurityOutlined,
 
 } from "@mui/icons-material";
-import { Box, useTheme , Typography} from '@mui/material';
+import { Box, useTheme , Typography, CircularProgress} from '@mui/material';
 
 import { getUsers } from '../../supaBase';
 
 export default function Invoices() {
       const theme = useTheme();
+      const [loading, setLoading] = useState(true);
       const [rows, setRows] = useState([]);
       useEffect(() => {
           async function fetchData() {
-            const data = await getUsers();
-            setRows(data);
-          }
+                      setLoading(true);
+                      const data = await getUsers();
+                      setRows(data);
+                      setLoading(false);
+                    }
           fetchData();
         }, []);
     const columns = [
@@ -65,10 +68,18 @@ export default function Invoices() {
     ];
 
   return <>
-
-      
-      <Box style={{ height: 400, width: "98%", mx: "auto" }}>
-        <DataGrid checkboxSelection slots={{toolbar: GridToolbar,}} autoHeight  rows={rows} columns={columns} />
-      </Box>
+        {loading ? 
+              <Box
+              sx={{
+                height: "75vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <CircularProgress color={theme.palette.primary.main} size={60} />
+              </Box> :<Box style={{ height: 400, width: "98%", mx: "auto" }}>
+                <DataGrid checkboxSelection slots={{toolbar: GridToolbar,}} autoHeight  rows={rows} columns={columns} />
+              </Box>}
     </>
 }
